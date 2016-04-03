@@ -46,17 +46,13 @@ def main():
 	if args.live:
 		print "|\tCelsius\t\t|\tFahrenheit\t|"
 		while True:
-			try:
-				tempString = getTempString()
-				celsius = convertToC(tempString)
-				fahrenheit = celsiusToF(celsius)
-				print "\t{0:.2f}{1}C\t\t\t{2:.2f}{3}F\r".format(celsius,u"\u00B0",fahrenheit,u"\u00B0"),
-				sys.stdout.flush()
-				time.sleep(args.interval)
-				print "\r",
-			except (KeyboardInterrupt, SystemExit):
-				print "Exiting..."
-				raise
+			tempString = getTempString()
+			celsius = convertToC(tempString)
+			fahrenheit = celsiusToF(celsius)
+			print "\t{0:.2f}{1}C\t\t\t{2:.2f}{3}F\r".format(celsius,u"\u00B0",fahrenheit,u"\u00B0"),
+			sys.stdout.flush()
+			time.sleep(args.interval)
+			print "\r",
 	elif args.fahrenheit:
 		print "Temperature:\t{:.2f}".format(fahrenheit)
 	elif args.celsius:
@@ -66,4 +62,8 @@ def main():
 		print "Fahrenheit:\t{:.2f}{}F".format(fahrenheit,u"\u00B0")
 
 if __name__ == "__main__":
-	main()
+	try:
+		main()
+	except KeyboardInterrupt:
+		print "\nExiting...\n"
+		pass
