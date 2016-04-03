@@ -6,7 +6,14 @@ import time,sys,argparse
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+temperature_file="/sys/class/thermal/thermal_zone0/temp"
+
 parser = argparse.ArgumentParser(description="Get the Raspberry Pi's temperature")
+parser.add_argument("-p","--precision",
+	action="store",
+	type=int,
+	choices=range(0,4),
+	help="Decimal place precision, from 0 to 3.") 
 parser.add_argument("-l","--live",
 	action="store_true",
 	help="Monitor the temperature live.")
@@ -25,41 +32,40 @@ group.add_argument("-f","--fahrenheit",
 
 args = parser.parse_args()
 
-def getTempString():
-	result = Popen(["vcgencmd","measure_temp"],stdout=PIPE,stderr=PIPE)
-	output,error = result.communicate()
-	return output
-
-def convertToC(text):
-	newString = text.split("=",1)[-1]
-	celsius = float(newString.split("'",1)[0])
-	return celsius
+def getTemp():
+	with open(temperature_file) as f:
+		c = map(float,f)
+		c = float(c[0]) / 1000
+		f = (c * 1.8) + 32
+		return c,f
 
 def celsiusToF(celsius):
 	fahrenheit = (celsius * 1.8) + 32
 	return fahrenheit
 
 def main():
-	tempString = getTempString()
-	celsius = convertToC(tempString)
-	fahrenheit = celsiusToF(celsius)
+	celsius,fahrenheit = getTemp()
 	if args.live:
 		print "|\tCelsius\t\t|\tFahrenheit\t|"
 		while True:
-			tempString = getTempString()
-			celsius = convertToC(tempString)
-			fahrenheit = celsiusToF(celsius)
-			print "\t{0:.2f}{1}C\t\t\t{2:.2f}{3}F\r".format(celsius,u"\u00B0",fahrenheit,u"\u00B0"),
+		#	celsius = (getTemp()[0] / 1000)
+		#	fahrenheit = celsiusToF(celsius)
+			celsius,fahrenheit = getTemp()
+			if args.precision > 2:
+				spacer = "\t\t"
+			else:
+				spacer = "\t\t\t"
+			print "\t{0:.{prec}f}{1}C{space}{2:.{prec}f}{3}F\r".format(celsius,u"\u00B0",fahrenheit,u"\u00B0",prec=args.precision,space=spacer),
 			sys.stdout.flush()
 			time.sleep(args.interval)
 			print "\r",
 	elif args.fahrenheit:
-		print "Temperature:\t{:.2f}".format(fahrenheit)
+		print "Temperature:\t{:.{prec}f}".format(fahrenheit, prec=args.precision)
 	elif args.celsius:
-		print "Temperature:\t{:.2f}".format(celsius)
+		print "Temperature:\t{:.{prec}f}".format(celsius,prec=args.precision)
 	else:
-		print "Celsius:\t{:.2f}{}C".format(celsius,u"\u00B0")
-		print "Fahrenheit:\t{:.2f}{}F".format(fahrenheit,u"\u00B0")
+		print "Celsius:\t{:.{prec}f}{}C".format(celsius,u"\u00B0",prec=args.precision)
+		print "Fahrenheit:\t{:.{prec}f}{}F".format(fahrenheit,u"\u00B0",prec=args.precision)
 
 if __name__ == "__main__":
 	try:
