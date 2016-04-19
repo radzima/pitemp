@@ -49,8 +49,6 @@ def main():
 	if args.live:
 		print "|\tCelsius\t\t|\tFahrenheit\t|"
 		while True:
-		#	celsius = (getTemp()[0] / 1000)
-		#	fahrenheit = celsiusToF(celsius)
 			celsius,fahrenheit = getTemp()
 			if args.precision > 2:
 				spacer = "\t\t"
