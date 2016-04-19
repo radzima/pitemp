@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description="Get the Raspberry Pi's temperature
 parser.add_argument("-p","--precision",
 	action="store",
 	type=int,
+	default=1,
 	choices=range(0,4),
 	help="Decimal place precision, from 0 to 3.") 
 parser.add_argument("-l","--live",
