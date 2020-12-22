@@ -59,7 +59,7 @@ def main():
 			time.sleep(args.interval)
 			print "\r",
 	elif args.fahrenheit:
-		print "Temperature:\t{:.{prec}f}".format(fahrenheit, prec=args.precision)
+		print "Temperature:\t{:.{prec}f}{}F".format(fahrenheit,u"\u00B0", prec=args.precision)
 	elif args.celsius:
 		print "Temperature:\t{:.{prec}f}".format(celsius,prec=args.precision)
 	else:
